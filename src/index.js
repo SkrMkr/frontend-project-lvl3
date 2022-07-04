@@ -1,7 +1,6 @@
 /* global document */
 import onChange from 'on-change';
 import * as yup from 'yup';
-import isEmpty from 'lodash/isEmpty.js';
 import keyBy from 'lodash/keyBy.js';
 import render from './render';
 
@@ -9,15 +8,7 @@ const validate = (fields, uniqueLinks) => {
   const schema = yup.object().shape({
     website: yup.string().url().nullable().notOneOf(uniqueLinks, 'RSS уже существует'),
   });
-  schema.validate(fields, { abortEarly: false })
-    .then(() => {
-      const withoutError = {};
-      return withoutError;
-    })
-    .catch((e) => {
-      const error = keyBy(e.inner, 'path');
-      return error;
-    });
+  return schema.validate(fields, { abortEarly: false });
 };
 
 const eventHandler = () => {
@@ -45,13 +36,16 @@ const eventHandler = () => {
     e.preventDefault();
     const userLink = e.target.querySelector('input').value;
     state.form.link.website = userLink;
-    const objectAfterValidation = validate(state.form.link, state.form.uniqueLinks);
-    console.log(objectAfterValidation);
-    watchedState.form.error = objectAfterValidation;
-    watchedState.form.valid = isEmpty(objectAfterValidation);
-    if (isEmpty(objectAfterValidation)) {
-      watchedState.form.uniqueLinks.push(userLink);
-    }
+    validate(state.form.link, state.form.uniqueLinks)
+      .then(() => {
+        watchedState.form.error = {};
+        watchedState.form.valid = true;
+        watchedState.form.uniqueLinks.push(userLink);
+      })
+      .catch((error) => {
+        watchedState.form.error = keyBy(error.inner, 'path');
+        watchedState.form.valid = false;
+      });
   });
 };
 
