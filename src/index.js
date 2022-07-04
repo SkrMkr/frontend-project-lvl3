@@ -9,12 +9,15 @@ const validate = (fields, uniqueLinks) => {
   const schema = yup.object().shape({
     website: yup.string().url().nullable().notOneOf(uniqueLinks, 'RSS уже существует'),
   });
-  try {
-    schema.validateSync(fields, { abortEarly: false });
-    return {};
-  } catch (e) {
-    return keyBy(e.inner, 'path');
-  }
+  schema.validate(fields, { abortEarly: false })
+    .then(() => {
+      const withoutError = {};
+      return withoutError;
+    })
+    .catch((e) => {
+      const error = keyBy(e.inner, 'path');
+      return error;
+    });
 };
 
 const eventHandler = () => {
@@ -43,6 +46,7 @@ const eventHandler = () => {
     const userLink = e.target.querySelector('input').value;
     state.form.link.website = userLink;
     const objectAfterValidation = validate(state.form.link, state.form.uniqueLinks);
+    console.log(objectAfterValidation);
     watchedState.form.error = objectAfterValidation;
     watchedState.form.valid = isEmpty(objectAfterValidation);
     if (isEmpty(objectAfterValidation)) {
