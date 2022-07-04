@@ -5,11 +5,10 @@ import isEmpty from 'lodash/isEmpty.js';
 import keyBy from 'lodash/keyBy.js';
 import render from './render';
 
-const schema = yup.object().shape({
-  website: yup.string().url().nullable(),
-});
-
-const validate = (fields) => {
+const validate = (fields, uniqueLinks) => {
+  const schema = yup.object().shape({
+    website: yup.string().url().nullable().notOneOf(uniqueLinks, 'RSS уже существует'),
+  });
   try {
     schema.validateSync(fields, { abortEarly: false });
     return {};
@@ -39,21 +38,15 @@ const eventHandler = () => {
 
   const watchedState = onChange(state, (path, value) => render(elements, path, value));
 
-  elements.form.addEventListener('submit', async (e) => {
+  elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const userLink = e.target.querySelector('input').value;
     state.form.link.website = userLink;
-    const objectAfterValidation = await validate(state.form.link);
+    const objectAfterValidation = validate(state.form.link, state.form.uniqueLinks);
     watchedState.form.error = objectAfterValidation;
     watchedState.form.valid = isEmpty(objectAfterValidation);
     if (isEmpty(objectAfterValidation)) {
-      if (state.form.uniqueLinks.includes(userLink)) {
-        watchedState.form.valid = false;
-        watchedState.form.error = 'RSS уже существует';
-      } else {
-        state.form.uniqueLinks.push(userLink);
-        watchedState.form.valid = true;
-      }
+      watchedState.form.uniqueLinks.push(userLink);
     }
   });
 };
