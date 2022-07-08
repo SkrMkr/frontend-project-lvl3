@@ -1,12 +1,21 @@
 /* global document */
 import onChange from 'on-change';
 import * as yup from 'yup';
-import keyBy from 'lodash/keyBy.js';
+import { setLocale } from 'yup';
 import render from './render';
+
+setLocale({
+  string: {
+    url: { key: 'not_url' },
+  },
+  mixed: {
+    notOneOf: { key: 'not_uniq' },
+  },
+});
 
 const validate = (fields, uniqueLinks) => {
   const schema = yup.object().shape({
-    website: yup.string().url().nullable().notOneOf(uniqueLinks, 'RSS уже существует'),
+    website: yup.string().url().nullable().notOneOf(uniqueLinks),
   });
   return schema.validate(fields, { abortEarly: false });
 };
@@ -43,7 +52,7 @@ const eventHandler = () => {
         watchedState.form.uniqueLinks.push(userLink);
       })
       .catch((error) => {
-        watchedState.form.error = keyBy(error.inner, 'path');
+        watchedState.form.error = error.message.key;
         watchedState.form.valid = false;
       });
   });

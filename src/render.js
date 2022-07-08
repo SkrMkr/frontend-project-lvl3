@@ -1,4 +1,5 @@
 import isEmpty from 'lodash/isEmpty.js';
+import i18nInstance from './init.js';
 
 const render = (elements, path, value) => {
   const { feedback } = elements;
@@ -7,9 +8,8 @@ const render = (elements, path, value) => {
 
   if (path === 'form.error' && !isEmpty(value)) {
     feedback.textContent = '';
-    const { website } = value;
     feedback.classList.add('text-danger');
-    feedback.textContent = website.message;
+    feedback.textContent = i18nInstance.t(value);
   }
 
   if (path === 'form.uniqueLinks') {
@@ -17,7 +17,7 @@ const render = (elements, path, value) => {
     field.focus();
     field.classList.remove('is-invalid');
     feedback.textContent = '';
-    feedback.textContent = 'RSS успешно загружен';
+    feedback.textContent = i18nInstance.t('success');
     feedback.classList.remove('text-danger');
   }
 
