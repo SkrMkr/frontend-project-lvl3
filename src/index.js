@@ -1,27 +1,10 @@
 /* global document */
 import axios from 'axios';
 import onChange from 'on-change';
-import * as yup from 'yup';
-import { setLocale } from 'yup';
-import uniqueId from 'lodash/uniqueId.js';
+import validate from './validator';
 import render from './render';
 import parseData from './parser.js';
-
-setLocale({
-  string: {
-    url: { key: 'not_url' },
-  },
-  mixed: {
-    notOneOf: { key: 'not_uniq' },
-  },
-});
-
-const validate = (fields, uniqueLinks) => {
-  const schema = yup.object().shape({
-    website: yup.string().url().nullable().notOneOf(uniqueLinks),
-  });
-  return schema.validate(fields, { abortEarly: false });
-};
+import update from './update.js';
 
 const eventHandler = () => {
   const elements = {
@@ -31,6 +14,11 @@ const eventHandler = () => {
     feedback: document.querySelector('.feedback'),
     feedsColumn: document.querySelector('.feeds'),
     postsColumn: document.querySelector('.posts'),
+    modalWindow: {
+      title: document.querySelector('.modal-title'),
+      body: document.querySelector('.modal-body'),
+      linkBtn: document.querySelector('.modal-footer a'),
+    },
   };
 
   const state = {
@@ -41,12 +29,22 @@ const eventHandler = () => {
       uniqueLinks: [],
       valid: '',
     },
+    uiState: {
+      selectedPost: {},
+      readPosts: [],
+    },
     error: '',
     feeds: [],
     posts: [],
   };
 
-  const watchedState = onChange(state, (path, value) => render(elements, path, value));
+  const watchedState = onChange(state, (path, value) => render(state, elements, path, value));
+  const timerForUpdate = () => {
+    update(watchedState);
+    setTimeout(timerForUpdate, 5000);
+  };
+
+  timerForUpdate();
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -56,40 +54,39 @@ const eventHandler = () => {
       .then(() => {
         watchedState.error = {};
         watchedState.form.valid = true;
-        const address = `https://allorigins.hexlet.app/get?url=${userLink}`;
+        const address = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(userLink)}`;
         axios.get(address)
           .then((response) => {
             watchedState.form.uniqueLinks.push(userLink);
             try {
               const responseDOM = parseData(response.data.contents);
-              const feedTitle = responseDOM.getElementsByTagName('title')[0].innerHTML;
-              const feedDescription = responseDOM.getElementsByTagName('description')[0].innerHTML;
-              const id = uniqueId();
-              const feed = {
-                feedTitle,
-                feedDescription,
-                id,
-              };
+              const { feed, posts } = responseDOM;
               watchedState.feeds.push(feed);
-              const items = responseDOM.getElementsByTagName('item');
-              items.forEach((item) => {
-                const postTitle = item.getElementsByTagName('title')[0].innerHTML;
-                const postDescription = item.getElementsByTagName('description')[0].innerHTML;
-                const postLink = item.getElementsByTagName('link')[0].innerHTML;
-                const post = {
-                  postTitle,
-                  postDescription,
-                  postLink,
-                  feedId: id,
-                };
-                watchedState.posts.push(post);
-              });
-            } catch {
+              posts.forEach((post) => watchedState.posts.push(post));
+            } catch (error1) {
               watchedState.error = 'default_error';
             }
           })
           .catch(() => {
             watchedState.error = 'network_error';
+          })
+          .then(() => {
+            const postsButtons = elements.postsColumn.querySelectorAll('button');
+            const postsTitlesLinks = elements.postsColumn.querySelectorAll('a');
+            postsButtons.forEach((postButton) => {
+              postButton.addEventListener('click', (el) => {
+                const selectedPostId = el.target.dataset.id;
+                const selectedPost = state.posts.find((post) => post.id === selectedPostId);
+                watchedState.uiState.selectedPost = selectedPost;
+                watchedState.uiState.readPosts.push(selectedPost.postLink);
+              });
+            });
+            postsTitlesLinks.forEach((postTitleLink) => {
+              postTitleLink.addEventListener('click', (el) => {
+                console.log(el.target.getAttribute('href'));
+                watchedState.uiState.readPosts.push(el.target.getAttribute('href'));
+              });
+            });
           });
       })
       .catch((error) => {
