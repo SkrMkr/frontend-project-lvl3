@@ -84,7 +84,7 @@ const render = (state, elements, path, value) => {
       a.setAttribute('href', post.postLink);
       a.setAttribute('target', '_blank');
       a.textContent = post.postTitle;
-      a.classList.add('postLink', 'fw-bold');
+      a.classList.add('fw-bold');
       li.append(a);
       li.append(button);
       ul.prepend(li);

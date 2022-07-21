@@ -58,7 +58,7 @@ const eventHandler = () => {
   };
 
   const postLinkClickListener = (event) => {
-    if (event.target.classList.contains('postLink')) {
+    if (event.target.classList.contains('fw-bold')) {
       watchedState.uiState.readPosts.push(event.target.getAttribute('href'));
     }
   };
