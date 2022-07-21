@@ -1,4 +1,3 @@
-/* global document */
 import axios from 'axios';
 import onChange from 'on-change';
 import validate from './validator';
@@ -46,6 +45,27 @@ const eventHandler = () => {
 
   timerForUpdate();
 
+  const modal = new bootstrap.Modal('#modal'); // eslint-disable-line
+
+  const modalButtonClickListener = (event) => {
+    if (event.target.classList.contains('modal-button')) {
+      const postId = event.target.dataset.id;
+      const selectedPost = state.posts.find((post) => post.id === postId);
+      watchedState.uiState.selectedPost = selectedPost;
+      watchedState.uiState.readPosts.push(selectedPost.postLink);
+      modal.show();
+    }
+  };
+
+  const postLinkClickListener = (event) => {
+    if (event.target.classList.contains('postLink')) {
+      watchedState.uiState.readPosts.push(event.target.getAttribute('href'));
+    }
+  };
+
+  document.addEventListener('click', modalButtonClickListener);
+  document.addEventListener('click', postLinkClickListener);
+
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const userLink = e.target.querySelector('input').value;
@@ -69,24 +89,6 @@ const eventHandler = () => {
           })
           .catch(() => {
             watchedState.error = 'network_error';
-          })
-          .then(() => {
-            const postsButtons = elements.postsColumn.querySelectorAll('button');
-            const postsTitlesLinks = elements.postsColumn.querySelectorAll('a');
-            postsButtons.forEach((postButton) => {
-              postButton.addEventListener('click', (el) => {
-                const selectedPostId = el.target.dataset.id;
-                const selectedPost = state.posts.find((post) => post.id === selectedPostId);
-                watchedState.uiState.selectedPost = selectedPost;
-                watchedState.uiState.readPosts.push(selectedPost.postLink);
-              });
-            });
-            postsTitlesLinks.forEach((postTitleLink) => {
-              postTitleLink.addEventListener('click', (el) => {
-                console.log(el.target.getAttribute('href'));
-                watchedState.uiState.readPosts.push(el.target.getAttribute('href'));
-              });
-            });
           });
       })
       .catch((error) => {

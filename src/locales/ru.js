@@ -7,5 +7,7 @@ export default {
     default_error: 'Неизвестная ошибка. Что-то пошло не так.',
     watching: 'Просмотр',
     read_full: 'Читать полностью',
+    title_for_feed_container: 'Фиды',
+    title_for_post_container: 'Посты',
   },
 };

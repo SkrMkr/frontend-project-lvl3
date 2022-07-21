@@ -1,3 +1,4 @@
+/* eslint-env browser */
 import uniqueId from 'lodash/uniqueId.js';
 
 const parseData = (htmlRequest) => {
@@ -27,7 +28,7 @@ const parseData = (htmlRequest) => {
       postLink,
       id,
     };
-    parsedDOMElements.posts.push(post);
+    parsedDOMElements.posts.unshift(post);
   });
 
   return parsedDOMElements;
