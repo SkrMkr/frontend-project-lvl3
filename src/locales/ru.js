@@ -4,7 +4,7 @@ export default {
     not_url: 'Ссылка должна быть валидным URL',
     not_uniq: 'RSS уже существует',
     network_error: 'Ошибка сети',
-    default_error: 'Неизвестная ошибка. Что-то пошло не так.',
+    default_error: 'Ресурс не содержит валидный RSS',
     watching: 'Просмотр',
     read_full: 'Читать полностью',
     title_for_feed_container: 'Фиды',
