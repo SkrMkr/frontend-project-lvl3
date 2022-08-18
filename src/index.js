@@ -1,5 +1,6 @@
 import axios from 'axios';
 import onChange from 'on-change';
+import uniqueId from 'lodash/uniqueId.js'
 import validate from './validator';
 import render from './render';
 import parseData from './parser.js';
@@ -82,7 +83,10 @@ const eventHandler = () => {
               const responseDOM = parseData(response.data.contents);
               const { feed, posts } = responseDOM;
               watchedState.feeds.push(feed);
-              posts.forEach((post) => watchedState.posts.push(post));
+              posts.forEach((post) => { 
+                post.id = uniqueId();
+                watchedState.posts.push(post);
+              });
             } catch (error1) {
               watchedState.error = 'default_error';
             }

@@ -1,5 +1,4 @@
 /* eslint-env browser */
-import uniqueId from 'lodash/uniqueId.js';
 
 const parseData = (htmlRequest) => {
   const parser = new DOMParser();
@@ -21,12 +20,10 @@ const parseData = (htmlRequest) => {
     const postTitle = item.querySelector('title').textContent;
     const postDescription = item.querySelector('description').textContent;
     const postLink = item.querySelector('link').textContent;
-    const id = uniqueId();
     const post = {
       postTitle,
       postDescription,
       postLink,
-      id,
     };
     parsedDOMElements.posts.unshift(post);
   });
