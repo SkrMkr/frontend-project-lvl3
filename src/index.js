@@ -40,12 +40,7 @@ const eventHandler = () => {
   };
 
   const watchedState = onChange(state, (path, value) => render(state, elements, path, value));
-  const timerForUpdate = () => {
-    update(watchedState);
-    setTimeout(timerForUpdate, 5000);
-  };
-
-  timerForUpdate();
+  update(watchedState);
 
   const modal = new bootstrap.Modal('#modal'); // eslint-disable-line
 

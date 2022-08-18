@@ -1,8 +1,8 @@
 import axios from 'axios';
+import uniqueId from 'lodash/uniqueId.js';
 import parseData from './parser.js';
-import uniqueId from 'lodash/uniqueId.js'
 
-const update = (state) => {
+const updateFeeds = (state) => {
   if (state.form.uniqueLinks.length !== 0) {
     state.form.uniqueLinks.forEach((link) => {
       const adress = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(link)}`;
@@ -19,6 +19,10 @@ const update = (state) => {
         });
     });
   }
+};
+
+const update = (state) => {
+  setInterval(() => updateFeeds(state), 5000);
 };
 
 export default update;
