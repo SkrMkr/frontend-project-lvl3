@@ -1,9 +1,7 @@
 import isEmpty from 'lodash/isEmpty.js';
 import i18n from 'i18next';
-import i18nInstance from './init.js';
 
-const renderFeedsList = (feedsColumn, feeds) => {
-  feedsColumn.innerHTML = '';
+const renderFeedsList = (feeds) => {
   const container = document.createElement('div');
   container.classList.add('card', 'border-0');
   const containerForTitle = document.createElement('div');
@@ -25,8 +23,7 @@ const renderFeedsList = (feedsColumn, feeds) => {
   return container;
 };
 
-const renderPostsColumn = (postsColumn, posts) => {
-  postsColumn.innerHTML = '';
+const renderPostsColumn = (posts) => {
   const containerPosts = document.createElement('div');
   containerPosts.classList.add('border-0', 'card');
 
@@ -101,25 +98,26 @@ const render = (state, elements, path, value) => {
       break;
 
     case 'feeds':
-      const containerRenderingFeeds = renderFeedsList(feedsColumn, value);
-      feedsColumn.prepend(containerRenderingFeeds);
+      feedsColumn.innerHTML = '';
+      feedsColumn.prepend(renderFeedsList(value));
       break;
 
     case 'posts':
-      const containerPosts = renderPostsColumn(postsColumn, value);
-      postsColumn.append(containerPosts);
+      postsColumn.innerHTML = '';
+      postsColumn.append(renderPostsColumn(value));
       if (state.uiState.readPosts.length !== 0) {
         makeReadLinks(state.uiState.readPosts, postsColumn);
       }
       break;
 
-    case 'uiState.selectedPost':
+    case 'uiState.selectedPost': {
       const { title, body, linkBtn } = modalWindow;
       title.textContent = value.postTitle;
       body.textContent = value.postDescription;
       linkBtn.setAttribute('href', value.postLink);
       linkBtn.innerHTML = i18n.t('read_full');
       break;
+    }
 
     case 'uiState.readPosts':
       makeReadLinks(value, postsColumn);
