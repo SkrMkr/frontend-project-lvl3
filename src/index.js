@@ -80,8 +80,7 @@ const eventHandler = () => {
               const { feed, posts } = responseDOM;
               watchedState.feeds.push(feed);
               posts.forEach((post) => {
-                post.id = uniqueId();
-                watchedState.posts.push(post);
+                watchedState.posts.push({ id: uniqueId(), ...post });
               });
             } catch (error1) {
               watchedState.error = 'valid_error';
