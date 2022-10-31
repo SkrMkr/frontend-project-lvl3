@@ -6,6 +6,7 @@ import render from './render';
 import parseData from './parser.js';
 import update from './update.js';
 import init from './init.js';
+import getAdress from './routes.js';
 
 const eventHandler = () => {
   const elements = {
@@ -32,7 +33,7 @@ const eventHandler = () => {
     },
     uiState: {
       selectedPost: {},
-      readPosts: [],
+      readPosts: new Set(),
     },
     error: '',
     feeds: [],
@@ -49,14 +50,14 @@ const eventHandler = () => {
       const postId = event.target.dataset.id;
       const selectedPost = state.posts.find((post) => post.id === postId);
       watchedState.uiState.selectedPost = selectedPost;
-      watchedState.uiState.readPosts.push(selectedPost.postLink);
+      watchedState.uiState.readPosts.add(selectedPost.postLink);
       modal.show();
     }
   };
 
   const postLinkClickListener = (event) => {
     if (event.target.classList.contains('fw-bold')) {
-      watchedState.uiState.readPosts.push(event.target.getAttribute('href'));
+      watchedState.uiState.readPosts.add(event.target.getAttribute('href'));
     }
   };
 
@@ -71,8 +72,7 @@ const eventHandler = () => {
       .then(() => {
         watchedState.error = {};
         watchedState.form.valid = true;
-        const address = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(userLink)}`;
-        axios.get(address)
+        axios.get(getAdress(userLink))
           .then((response) => {
             watchedState.form.uniqueLinks.push(userLink);
             try {

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import uniqueId from 'lodash/uniqueId.js';
 import parseData from './parser.js';
+import getAdress from './routes.js';
 
 const update = (state) => {
   if (state.form.uniqueLinks.length === 0) {
@@ -8,10 +9,8 @@ const update = (state) => {
     return;
   }
 
-  const requests = state.form.uniqueLinks.map((link) => {
-    const adress = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(link)}`;
-    return axios.get(adress);
-  });
+  const requests = state.form.uniqueLinks.map((link) => axios.get(getAdress(link))
+    .catch((e) => console.log(e)));
 
   Promise.all(requests).then((responses) => {
     responses.forEach((response) => {
