@@ -10,7 +10,9 @@ const update = (state) => {
   }
 
   const requests = state.form.uniqueLinks.map((link) => axios.get(getAdress(link))
-    .catch((e) => console.log(e)));
+    .catch(() => {
+      throw new Error();
+    }));
 
   Promise.all(requests).then((responses) => {
     responses.forEach((response) => {
