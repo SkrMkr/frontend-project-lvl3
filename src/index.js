@@ -43,16 +43,12 @@ const eventHandler = () => {
   const watchedState = onChange(state, (path, value) => render(state, elements, path, value));
   update(watchedState);
 
-  const modal = new bootstrap.Modal('#modal'); // eslint-disable-line
-
-  const modalButtonClickListener = (event) => {
-    if (event.target.classList.contains('modal-button')) {
-      const postId = event.target.dataset.id;
-      watchedState.uiState.selectedPostId = postId;
-      watchedState.uiState.readPosts.add(postId);
-      modal.show();
-    }
-  };
+  // eslint-disable-next-line no-undef
+  $('#modal').on('show.bs.modal', (e) => {
+    const postId = e.relatedTarget.dataset.id;
+    watchedState.uiState.selectedPostId = postId;
+    watchedState.uiState.readPosts.add(postId);
+  });
 
   const postLinkClickListener = (event) => {
     if (event.target.classList.contains('fw-bold')) {
@@ -62,7 +58,6 @@ const eventHandler = () => {
     }
   };
 
-  document.addEventListener('click', modalButtonClickListener);
   const postsContainer = document.querySelector('.posts');
   postsContainer.addEventListener('click', postLinkClickListener);
 

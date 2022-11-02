@@ -44,6 +44,8 @@ const renderPostsColumn = (posts) => {
     button.setAttribute('data-id', post.id);
     button.textContent = i18n.t('watching');
     button.classList.add('btn', 'btn-outline-primary', 'btn-sm', 'pull-right', 'modal-button');
+    button.setAttribute('data-toggle', 'modal');
+    button.setAttribute('data-target', '#modal');
     a.setAttribute('href', post.postLink);
     a.setAttribute('target', '_blank');
     a.textContent = post.postTitle;
