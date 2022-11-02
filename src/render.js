@@ -66,12 +66,14 @@ const makeReadLinks = (links, countainer) => {
 };
 
 const render = (state, elements, path, value) => {
-  const { feedback } = elements;
-  const { field } = elements;
-  const { form } = elements;
-  const { feedsColumn } = elements;
-  const { postsColumn } = elements;
-  const { modalWindow } = elements;
+  const {
+    feedback,
+    field,
+    form,
+    feedsColumn,
+    postsColumn,
+    modalWindow,
+  } = elements;
 
   switch (path) {
     case 'error':
@@ -106,22 +108,32 @@ const render = (state, elements, path, value) => {
       postsColumn.innerHTML = '';
       postsColumn.append(renderPostsColumn(value));
       if (state.uiState.readPosts.length !== 0) {
-        makeReadLinks(state.uiState.readPosts, postsColumn);
+        const idReadPosts = Array.from(state.uiState.readPosts);
+        const links = value
+          .filter(({ id }) => idReadPosts.includes(id))
+          .map((post) => post.postLink);
+        makeReadLinks(links, postsColumn);
       }
       break;
 
-    case 'uiState.selectedPost': {
+    case 'uiState.selectedPostId': {
       const { title, body, linkBtn } = modalWindow;
-      title.textContent = value.postTitle;
-      body.textContent = value.postDescription;
-      linkBtn.setAttribute('href', value.postLink);
+      const selectedPost = state.posts.find((post) => post.id === value);
+      title.textContent = selectedPost.postTitle;
+      body.textContent = selectedPost.postDescription;
+      linkBtn.setAttribute('href', selectedPost.postLink);
       linkBtn.innerHTML = i18n.t('read_full');
       break;
     }
 
-    case 'uiState.readPosts':
-      makeReadLinks(value, postsColumn);
+    case 'uiState.readPosts': {
+      const idPosts = Array.from(value);
+      const links = state.posts
+        .filter(({ id }) => idPosts.includes(id))
+        .map((post) => post.postLink);
+      makeReadLinks(links, postsColumn);
       break;
+    }
 
     default:
       feedback.textContent = '';

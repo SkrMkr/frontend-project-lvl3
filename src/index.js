@@ -32,7 +32,7 @@ const eventHandler = () => {
       valid: '',
     },
     uiState: {
-      selectedPost: {},
+      selectedPostId: null,
       readPosts: new Set(),
     },
     error: '',
@@ -48,16 +48,17 @@ const eventHandler = () => {
   const modalButtonClickListener = (event) => {
     if (event.target.classList.contains('modal-button')) {
       const postId = event.target.dataset.id;
-      const selectedPost = state.posts.find((post) => post.id === postId);
-      watchedState.uiState.selectedPost = selectedPost;
-      watchedState.uiState.readPosts.add(selectedPost.postLink);
+      watchedState.uiState.selectedPostId = postId;
+      watchedState.uiState.readPosts.add(postId);
       modal.show();
     }
   };
 
   const postLinkClickListener = (event) => {
     if (event.target.classList.contains('fw-bold')) {
-      watchedState.uiState.readPosts.add(event.target.getAttribute('href'));
+      const btnElement = event.target.nextElementSibling;
+      const postId = btnElement.dataset.id;
+      watchedState.uiState.readPosts.add(postId);
     }
   };
 
