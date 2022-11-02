@@ -63,7 +63,8 @@ const eventHandler = () => {
   };
 
   document.addEventListener('click', modalButtonClickListener);
-  document.addEventListener('click', postLinkClickListener);
+  const postsContainer = document.querySelector('.posts');
+  postsContainer.addEventListener('click', postLinkClickListener);
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
