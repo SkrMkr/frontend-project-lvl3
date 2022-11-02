@@ -15,19 +15,20 @@ const parseData = (htmlRequest) => {
     posts: [],
   };
 
-  const items = parsedDOM.querySelectorAll('item');
-  items.forEach((item) => {
-    const postTitle = item.querySelector('title').textContent;
-    const postDescription = item.querySelector('description').textContent;
-    const postLink = item.querySelector('link').textContent;
-    const post = {
-      postTitle,
-      postDescription,
-      postLink,
-    };
-    parsedDOMElements.posts.unshift(post);
-  });
+  const items = Array.from(parsedDOM.querySelectorAll('item'))
+    .map((item) => {
+      const postTitle = item.querySelector('title').textContent;
+      const postDescription = item.querySelector('description').textContent;
+      const postLink = item.querySelector('link').textContent;
+      const post = {
+        postTitle,
+        postDescription,
+        postLink,
+      };
+      return post;
+    });
 
+  parsedDOMElements.posts = items.reverse();
   return parsedDOMElements;
 };
 
