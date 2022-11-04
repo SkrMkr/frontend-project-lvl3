@@ -43,19 +43,17 @@ const eventHandler = () => {
   const watchedState = onChange(state, (path, value) => render(state, elements, path, value));
   update(watchedState);
 
-  // eslint-disable-next-line no-undef
-  $('#modal').on('show.bs.modal', (e) => {
-    const postId = e.relatedTarget.dataset.id;
-    watchedState.uiState.selectedPostId = postId;
-    watchedState.uiState.readPosts.add(postId);
-  });
-
   const postLinkClickListener = (event) => {
+    let postId;
+    if (event.target.classList.contains('btn')) {
+      postId = event.target.dataset.id;
+      watchedState.uiState.selectedPostId = postId;
+    }
     if (event.target.classList.contains('fw-bold')) {
       const btnElement = event.target.nextElementSibling;
-      const postId = btnElement.dataset.id;
-      watchedState.uiState.readPosts.add(postId);
+      postId = btnElement.dataset.id;
     }
+    watchedState.uiState.readPosts.add(postId);
   };
 
   const postsContainer = document.querySelector('.posts');
