@@ -9,7 +9,8 @@ const update = (state) => {
     return;
   }
 
-  const requests = state.form.uniqueLinks.map((link) => axios.get(getAdress(link)));
+  const requests = state.form.uniqueLinks.map((link) => axios.get(getAdress(link))
+    .catch(console.error));
 
   Promise.all(requests).then((responses) => {
     responses.forEach((response) => {
@@ -23,7 +24,7 @@ const update = (state) => {
     });
 
     setTimeout(() => update(state), 5000);
-  }).catch(() => setTimeout(() => update(state), 5000));
+  });
 };
 
 export default update;

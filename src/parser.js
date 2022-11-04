@@ -7,14 +7,6 @@ const parseData = (htmlRequest) => {
   const feedTitle = parsedDOM.querySelector('title').textContent;
   const feedDescription = parsedDOM.querySelector('description').textContent;
 
-  const parsedDOMElements = {
-    feed: {
-      feedTitle,
-      feedDescription,
-    },
-    posts: [],
-  };
-
   const items = Array.from(parsedDOM.querySelectorAll('item'))
     .map((item) => {
       const postTitle = item.querySelector('title').textContent;
@@ -26,10 +18,16 @@ const parseData = (htmlRequest) => {
         postLink,
       };
       return post;
-    });
+    })
+    .reverse();
 
-  parsedDOMElements.posts = items.reverse();
-  return parsedDOMElements;
+  return {
+    feed: {
+      feedTitle,
+      feedDescription,
+    },
+    posts: items,
+  };
 };
 
 export default parseData;
